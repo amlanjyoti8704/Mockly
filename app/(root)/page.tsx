@@ -7,7 +7,7 @@ import SplineScene from '../../components/spline'
 import InterviewCard from '@/components/InterviewCard'
 import { dummyInterviews } from '@/constants'
 
-// import { getCurrentUser } from '@/lib/actions/auth.action';
+import { getCurrentUser } from '@/lib/action/auth.action';
 // import {
 //   getInterviewsByUserId,
 //   getLatestInterviews,
