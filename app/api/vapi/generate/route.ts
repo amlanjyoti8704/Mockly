@@ -37,6 +37,7 @@ export async function POST(request: Request) {
    
 
     try {
+           await new Promise(res => setTimeout(res, 5000));
         const { text:questions } = await generateText({
             // Use this EXACT string. 'gemini-1.5-flash-latest' is the 
             // most reliable way to hit the current free tier v1beta endpoint.
