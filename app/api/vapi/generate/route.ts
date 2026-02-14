@@ -6,20 +6,35 @@ import { db } from "@/firebase/admin";
 export async function GET(){
     return Response.json({success: true, data: 'THANK YOU'}, {status:200})
 }
-let lastRequestTime = 0;
+
 export async function POST(request: Request) {
-    const { type, role, level, techstack, amount, userid } = await request.json();
+   const body = await request.json();
 
-    const now = Date.now();
+  console.log("VAPI BODY:", body);
 
-    if (now - lastRequestTime < 15000) {
+  const { type, role, level, techstack, amount, userid } = body;
+
+  if (!techstack) {
+    return Response.json({ error: "Missing techstack" }, { status: 400 });
+  }
+
+    const userRef = db.collection("users").doc(userid);
+    const userDoc = await userRef.get();
+
+    const lastRequest = userDoc.data()?.lastInterviewRequest || 0;
+
+    if (Date.now() - lastRequest < 15000) {
         return Response.json(
-        { success: false, error: "Too many requests. Please wait." },
+        { error: "Too many requests. Please wait 15 seconds." },
         { status: 429 }
         );
     }
 
-    lastRequestTime = now;
+    await userRef.set(
+        { lastInterviewRequest: Date.now() },
+        { merge: true }
+    );
+   
 
     try {
         const { text:questions } = await generateText({
@@ -42,9 +57,8 @@ export async function POST(request: Request) {
             Example: ["First question here?", "Second question here?"]`,
             // Set maxRetries to 0 so we see the REAL error immediately 
             // instead of waiting 64 seconds for a timeout.
-            maxRetries: 0, 
+            maxRetries: 0,
         });
-
         // Parse and save
         // const cleanText = text.replace(/```json|```/g, "").trim();
         // const questionsArray = JSON.parse(cleanText);
