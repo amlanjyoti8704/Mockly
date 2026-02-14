@@ -3,28 +3,22 @@ import { db } from "@/firebase/admin";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    console.log("FULL WEBHOOK BODY:", JSON.stringify(body, null, 2));
 
-    console.log("VAPI WEBHOOK:", body);
-    
-    const transcript = body.messages;
-    console.log("FULL TRANSCRIPT:", transcript);
-    const userId = body.metadata?.userid;
+    const event = body.message;
 
-    // 🔥 IMPORTANT:
-    // The final assistant message should contain the JSON evaluation
-    const finalMessage = transcript?.[transcript.length - 1]?.content;
-
-    if (!userId || !finalMessage) {
-      return Response.json({ error: "Missing data" }, { status: 400 });
+    // We only care about tool calls
+    if (event?.type !== "tool-call") {
+      return Response.json({ ignored: true });
     }
 
-    let feedback;
+    const userId = event?.assistant?.variableValues?.userid;
 
-    try {
-      feedback = JSON.parse(finalMessage);
-    } catch (err) {
-      console.error("Invalid JSON from Vapi:", finalMessage);
-      return Response.json({ error: "Invalid evaluation format" }, { status: 400 });
+    const feedback = event?.toolCall?.arguments?.feedback;
+
+    if (!userId || !feedback) {
+      console.log("Missing tool data");
+      return Response.json({ error: "Missing data" }, { status: 400 });
     }
 
     await db.collection("feedback").add({
@@ -33,10 +27,12 @@ export async function POST(req: Request) {
       createdAt: new Date().toISOString(),
     });
 
+    console.log("Feedback saved successfully");
+
     return Response.json({ success: true });
 
   } catch (error: any) {
-    console.error("Webhook error:", error.message);
+    console.error("Webhook error:", error);
     return Response.json({ error: "Webhook failed" }, { status: 500 });
   }
 }
