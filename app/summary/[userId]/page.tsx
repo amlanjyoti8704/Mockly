@@ -4,61 +4,53 @@ interface PageProps {
   params: Promise<{ userId: string }>;
 }
 
-const Page = async ({ params }: PageProps) => {
-  const { userId } = await params; // 🔥 REQUIRED in Next 15+
+export default async function Page({ params }: PageProps) {
+  try {
+    const { userId } = await params;
 
-  const snapshot = await db
-    .collection("feedback")
-    .where("userId", "==", userId)
-    .orderBy("createdAt", "desc")
-    .limit(1)
-    .get();
+    const snapshot = await db
+      .collection("feedback")
+      .where("userId", "==", userId)
+      .orderBy("createdAt", "desc")
+      .limit(1)
+      .get();
 
-  if (snapshot.empty) {
+    if (snapshot.empty) {
+      return (
+        <div className="p-10 text-center text-gray-500">
+          No feedback found.
+        </div>
+      );
+    }
+
+    const feedback = snapshot.docs[0].data()?.feedback;
+
+    if (!feedback) {
+      return (
+        <div className="p-10 text-center text-gray-500">
+          Feedback exists but is malformed.
+        </div>
+      );
+    }
+
     return (
-      <div className="p-10 text-center text-gray-500">
-        No feedback found.
+      <div className="p-10 text-white">
+        <h1 className="text-3xl font-bold mb-6">
+          Interview Summary
+        </h1>
+
+        <pre className="bg-black p-6 rounded-lg overflow-auto">
+          {JSON.stringify(feedback, null, 2)}
+        </pre>
+      </div>
+    );
+
+  } catch (error) {
+    console.error("SUMMARY PAGE ERROR:", error);
+    return (
+      <div className="p-10 text-red-500">
+        Something went wrong loading summary.
       </div>
     );
   }
-
-  const feedback = snapshot.docs[0].data().feedback;
-
-  const strengths = feedback?.strengths ?? [];
-  const improvements = feedback?.improvements ?? [];
-  const communication = feedback?.communication ?? "";
-  const summary = feedback?.summary ?? "";
-  const technicalScore = Number(feedback?.technicalScore ?? 0);
-
-  return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto space-y-10">
-        <h1 className="text-4xl font-bold">Interview Performance Report</h1>
-
-        <p>Technical Score: {technicalScore}/10</p>
-
-        <h2>Strengths</h2>
-        <ul>
-          {strengths.map((item: string, i: number) => (
-            <li key={i}>{item}</li>
-          ))}
-        </ul>
-
-        <h2>Areas of Improvement</h2>
-        <ul>
-          {improvements.map((item: string, i: number) => (
-            <li key={i}>{item}</li>
-          ))}
-        </ul>
-
-        <h2>Communication</h2>
-        <p>{communication}</p>
-
-        <h2>Summary</h2>
-        <p>{summary}</p>
-      </div>
-    </div>
-  );
-};
-
-export default Page;
+}

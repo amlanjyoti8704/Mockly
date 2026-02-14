@@ -5,8 +5,9 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     console.log("VAPI WEBHOOK:", body);
-
+    
     const transcript = body.messages;
+    console.log("FULL TRANSCRIPT:", transcript);
     const userId = body.metadata?.userid;
 
     // 🔥 IMPORTANT:
