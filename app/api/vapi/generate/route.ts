@@ -6,9 +6,20 @@ import { db } from "@/firebase/admin";
 export async function GET(){
     return Response.json({success: true, data: 'THANK YOU'}, {status:200})
 }
-
+let lastRequestTime = 0;
 export async function POST(request: Request) {
     const { type, role, level, techstack, amount, userid } = await request.json();
+
+    const now = Date.now();
+
+    if (now - lastRequestTime < 15000) {
+        return Response.json(
+        { success: false, error: "Too many requests. Please wait." },
+        { status: 429 }
+        );
+    }
+
+    lastRequestTime = now;
 
     try {
         const { text:questions } = await generateText({
