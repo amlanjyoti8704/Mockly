@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { vapi } from "@/lib/vapi.sdk";
@@ -21,6 +21,10 @@ interface SavedMessage {
 const Agent = ({
   userName,
   userId,
+  interviewId,
+  feedbackId,
+  type,
+  questions,
 }: AgentProps) => {
   const router = useRouter();
 
@@ -29,6 +33,7 @@ const Agent = ({
   );
   const [messages, setMessages] = useState<SavedMessage[]>([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
 
   /* =========================
      VAPI EVENT LISTENERS
@@ -39,10 +44,17 @@ const Agent = ({
       setCallStatus(CallStatus.ACTIVE);
     };
 
-    const onCallEnd = () => {
+    const onCallEnd = async () => {
       setCallStatus(CallStatus.FINISHED);
+      setIsGeneratingFeedback(true);
 
-      // 🔥 Redirect to summary page
+      // Give VAPI's saveInterviewResult tool time to POST to our webhook
+      // and for our webhook to save the feedback to Firestore.
+      // The tool fires at the end of the conversation before the call ends,
+      // but there's a small network delay.
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      setIsGeneratingFeedback(false);
       router.push(`/summary/${userId}`);
     };
 
@@ -111,6 +123,22 @@ const Agent = ({
   /* =========================
      UI
   ========================== */
+
+  // Show a generating feedback overlay
+  if (isGeneratingFeedback) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-6 py-20">
+        <div className="feedback-loader" />
+        <h3 className="text-2xl font-semibold text-white">
+          Analyzing your interview...
+        </h3>
+        <p className="text-gray-400 text-center max-w-md">
+          Our AI is reviewing your responses and generating detailed
+          feedback. This usually takes a few seconds.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>

@@ -342,3 +342,263 @@
   background: radial-gradient(circle at bottom right, rgba(10,10,20,0.8), transparent 70%);
   pointer-events: none;
 }
+
+/* ========================
+   Feedback Loader
+======================== */
+.feedback-loader {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 4px solid rgba(202, 197, 254, 0.2);
+  border-top-color: #cac5fe;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========================
+   Feedback Summary Page
+======================== */
+.feedback-container {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.feedback-header {
+  text-align: center;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.feedback-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.25rem;
+}
+
+.feedback-header p {
+  color: #6870a6;
+  font-size: 0.95rem;
+}
+
+/* Total Score Circle */
+.score-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.score-ring {
+  position: relative;
+  width: 140px;
+  height: 140px;
+}
+
+.score-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.score-ring-bg {
+  fill: none;
+  stroke: rgba(202, 197, 254, 0.1);
+  stroke-width: 10;
+}
+
+.score-ring-fill {
+  fill: none;
+  stroke: #cac5fe;
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease-out;
+}
+
+.score-ring-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.score-ring-text .score-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+
+.score-ring-text .score-label {
+  font-size: 0.75rem;
+  color: #6870a6;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.score-verdict {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #cac5fe;
+}
+
+/* Category Score Cards */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.category-card {
+  background: linear-gradient(to bottom, #1a1c20, #08090d);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.category-card .category-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.category-card .category-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #d6e0ff;
+}
+
+.category-card .category-score {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #cac5fe;
+}
+
+.category-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(202, 197, 254, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.category-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(to right, #7c78ff, #cac5fe);
+  transition: width 1s ease-out;
+}
+
+.category-card .category-comment {
+  font-size: 0.85rem;
+  color: #6870a6;
+  line-height: 1.5;
+}
+
+/* Strengths & Improvements */
+.feedback-lists {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .feedback-lists {
+    grid-template-columns: 1fr;
+  }
+}
+
+.feedback-list-card {
+  background: linear-gradient(to bottom, #1a1c20, #08090d);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.feedback-list-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.feedback-list-card.strengths h3 {
+  color: #49de50;
+}
+
+.feedback-list-card.improvements h3 {
+  color: #f5a623;
+}
+
+.feedback-list-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.feedback-list-card li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #d6e0ff;
+  line-height: 1.5;
+}
+
+.feedback-list-card.strengths li::before {
+  content: "✓";
+  color: #49de50;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.feedback-list-card.improvements li::before {
+  content: "→";
+  color: #f5a623;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Final Assessment */
+.final-assessment {
+  background: linear-gradient(to bottom, #1a1c20, #08090d);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.final-assessment h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #cac5fe;
+  margin-bottom: 0.75rem;
+}
+
+.final-assessment p {
+  font-size: 0.95rem;
+  color: #d6e0ff;
+  line-height: 1.7;
+}
+
+/* Back Button */
+.feedback-actions {
+  display: flex;
+  justify-content: center;
+  padding-top: 0.5rem;
+}
